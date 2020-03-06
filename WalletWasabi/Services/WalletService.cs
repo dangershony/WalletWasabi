@@ -337,6 +337,13 @@ namespace WalletWasabi.Services
 
 		private async Task ProcessFilterModelAsync(FilterModel filterModel, CancellationToken cancel)
 		{
+			bool? coreMatchFound = false;
+			if (CoreNode.RpcClient != null)
+			{
+				BlockFilter coreBlockFilter = await CoreNode.RpcClient.GetBlockFilterAsync(filterModel.Header.BlockHash);
+				coreMatchFound = coreBlockFilter.Filter.MatchAny(KeyManager.GetPubKeyScriptBytes(), filterModel.Header.BlockHash.ToBytes());
+			}
+
 			var matchFound = filterModel.Filter.MatchAny(KeyManager.GetPubKeyScriptBytes(), filterModel.FilterKey);
 			if (matchFound)
 			{
@@ -349,10 +356,21 @@ namespace WalletWasabi.Services
 					Transaction tx = currentBlock.Transactions[i];
 					txsToProcess.Add(new SmartTransaction(tx, height, currentBlock.GetHash(), i, firstSeen: currentBlock.Header.BlockTime));
 				}
-				TransactionProcessor.Process(txsToProcess);
+				var processed = TransactionProcessor.Process(txsToProcess);
 				KeyManager.SetBestHeight(height);
 
 				NewBlockProcessed?.Invoke(this, currentBlock);
+
+				if (coreMatchFound.HasValue && matchFound != coreMatchFound)
+				{
+					// Due to possible colllision of filter values we only know if coins are found after fetching the block
+					// If coins where found we expect the coordinator filter and core filter to both have found a match
+					// otherwise somethig is wrong with the filters.
+					if (processed.Any(a => a.IsNews))
+					{
+						throw new Exception("Filter mismatch");
+					}
+				}
 			}
 
 			LastProcessedFilter = filterModel;
