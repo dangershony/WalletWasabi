@@ -24,6 +24,11 @@ namespace WalletWasabi.BitcoinCore
 			return await Rpc.GetBestBlockHashAsync().ConfigureAwait(false);
 		}
 
+		public Task<EstimateSmartFeeResponse> TryEstimateSmartFeeAsync(int confirmationTarget, EstimateSmartFeeMode estimateMode = EstimateSmartFeeMode.Conservative)
+		{
+			return Rpc.TryEstimateSmartFeeAsync(confirmationTarget, estimateMode: estimateMode);
+		}
+
 		public virtual async Task<Block> GetBlockAsync(uint256 blockHash)
 		{
 			return await Rpc.GetBlockAsync(blockHash).ConfigureAwait(false);

@@ -5,64 +5,67 @@ using System.Threading.Tasks;
 
 namespace WalletWasabi.BitcoinCore
 {
- 	public interface IRPCClient
- 	{
- 		Network Network { get; }
-		RPCCredentialString CredentialString { get; }
-  
-   		Task<uint256> GetBestBlockHashAsync();
- 
- 		Task<Block> GetBlockAsync(uint256 blockId);
-		 
-		Task<Block> GetBlockAsync(uint blockHeight);
+    public interface IRPCClient
+    {
+        Network Network { get; }
+        RPCCredentialString CredentialString { get; }
 
-		Task<BlockHeader> GetBlockHeaderAsync(uint256 blockHash);
+        Task<uint256> GetBestBlockHashAsync();
 
-		Task<uint256[]> GenerateAsync(int blockCount);
+        Task<Block> GetBlockAsync(uint256 blockId);
 
-		Task StopAsync();
+        Task<Block> GetBlockAsync(uint blockHeight);
 
-		Task<BlockchainInfo> GetBlockchainInfoAsync();
+        Task<BlockHeader> GetBlockHeaderAsync(uint256 blockHash);
 
-		Task<PeerInfo[]> GetPeersInfoAsync();
-		Task<TimeSpan> UptimeAsync();
+        Task<uint256[]> GenerateAsync(int blockCount);
 
-		Task<uint256> SendRawTransactionAsync(Transaction transaction);
+        Task StopAsync();
 
-		Task<MempoolEntry> GetMempoolEntryAsync(uint256 txid, bool throwIfNotFound = true);
+        Task<EstimateSmartFeeResponse> TryEstimateSmartFeeAsync(int confirmationTarget, EstimateSmartFeeMode estimateMode = EstimateSmartFeeMode.Conservative);
 
-		Task<uint256[]> GetRawMempoolAsync();
+        Task<BlockchainInfo> GetBlockchainInfoAsync();
 
-		Task<MempoolAcceptResult> TestMempoolAcceptAsync(Transaction transaction, bool allowHighFees = false);
+        Task<PeerInfo[]> GetPeersInfoAsync();
 
-		GetTxOutResponse GetTxOut(uint256 txid, int index, bool includeMempool = true);
+        Task<TimeSpan> UptimeAsync();
 
-		Task<EstimateSmartFeeResponse> EstimateSmartFeeAsync(int confirmationTarget, EstimateSmartFeeMode estimateMode = EstimateSmartFeeMode.Conservative);
+        Task<uint256> SendRawTransactionAsync(Transaction transaction);
 
-		Task<GetTxOutResponse> GetTxOutAsync(uint256 txid, int index, bool includeMempool = true);
+        Task<MempoolEntry> GetMempoolEntryAsync(uint256 txid, bool throwIfNotFound = true);
 
-		IRPCClient PrepareBatch();
+        Task<uint256[]> GetRawMempoolAsync();
 
-		Task<uint256> SendToAddressAsync(BitcoinAddress address, Money amount, string commentTx = null, string commentDest = null, bool subtractFeeFromAmount = false, bool replaceable = false);
+        Task<MempoolAcceptResult> TestMempoolAcceptAsync(Transaction transaction, bool allowHighFees = false);
 
-		Task<uint256> GetBlockHashAsync(int height);
+        GetTxOutResponse GetTxOut(uint256 txid, int index, bool includeMempool = true);
 
-		Task InvalidateBlockAsync(uint256 blockHash);
+        Task<EstimateSmartFeeResponse> EstimateSmartFeeAsync(int confirmationTarget, EstimateSmartFeeMode estimateMode = EstimateSmartFeeMode.Conservative);
 
-		Task AbandonTransactionAsync(uint256 txid);
+        Task<GetTxOutResponse> GetTxOutAsync(uint256 txid, int index, bool includeMempool = true);
 
-		Task<BumpResponse> BumpFeeAsync(uint256 txid);
+        IRPCClient PrepareBatch();
 
-		Task<Transaction> GetRawTransactionAsync(uint256 txid, bool throwIfNotFound = true);
+        Task<uint256> SendToAddressAsync(BitcoinAddress address, Money amount, string commentTx = null, string commentDest = null, bool subtractFeeFromAmount = false, bool replaceable = false);
 
-		Task<int> GetBlockCountAsync();
+        Task<uint256> GetBlockHashAsync(int height);
 
-		Task<BitcoinAddress> GetNewAddressAsync();
+        Task InvalidateBlockAsync(uint256 blockHash);
 
-		Task<SignRawTransactionResponse> SignRawTransactionWithWalletAsync(SignRawTransactionRequest request);
+        Task AbandonTransactionAsync(uint256 txid);
 
-		Task<UnspentCoin[]> ListUnspentAsync();
+        Task<BumpResponse> BumpFeeAsync(uint256 txid);
 
-		Task SendBatchAsync();
-	}
+        Task<Transaction> GetRawTransactionAsync(uint256 txid, bool throwIfNotFound = true);
+
+        Task<int> GetBlockCountAsync();
+
+        Task<BitcoinAddress> GetNewAddressAsync();
+
+        Task<SignRawTransactionResponse> SignRawTransactionWithWalletAsync(SignRawTransactionRequest request);
+
+        Task<UnspentCoin[]> ListUnspentAsync();
+
+        Task SendBatchAsync();
+    }
 }
